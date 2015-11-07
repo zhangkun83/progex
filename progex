@@ -1,0 +1,57 @@
+#!/bin/bash
+# A simple tool for beginners of C programming to exercise programming
+# It opens a source file in an text editor, and automatically compiles and runs
+# the program when it changes.
+# Works on Mac OSX.
+
+EDITOR="open -t"
+
+get_timestamp() {
+  stat -f "%Dm" "$FILE"
+}
+
+cd "$(dirname "$0")"
+
+FILE="$1"
+while true; do
+  if [[ $FILE =~ \.c$ ]]; then
+    COMPILER=cc
+    break
+  elif [[ $FILE =~ \.cpp$ ]]; then
+    COMPILER=c++
+    break
+  fi
+  echo
+  echo "File name must end with \".c\" or \".cpp\""
+  echo -n "Enter the file name of your program: "
+  read FILE
+done
+
+echo ">>>> Opening \"$FILE\""
+
+if [ ! -f "$FILE" ]; then
+  touch "$FILE"
+  TIMESTAMP0=$(get_timestamp)
+fi
+
+$EDITOR "$FILE"
+
+BUILD_DIR="$(dirname "$FILE")/build"
+OUTPUT_FILE="$BUILD_DIR/$(basename "$FILE")"
+
+mkdir -p "$BUILD_DIR"
+
+while true; do
+  TIMESTAMP=$(get_timestamp)
+  if [ "$TIMESTAMP0" != "$TIMESTAMP" ]; then
+    clear
+    echo ">>>> Compiling \"$FILE\""
+    $COMPILER -w -o "$OUTPUT_FILE" "$FILE" &&\
+    echo ">>>> Running \"$OUTPUT_FILE\"" &&\
+    $OUTPUT_FILE &&\
+    echo ">>>> Program ended"
+    echo
+  fi
+  TIMESTAMP0="$TIMESTAMP"
+  sleep 1
+done
