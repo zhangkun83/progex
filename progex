@@ -37,7 +37,7 @@ fi
 $EDITOR "$FILE"
 
 BUILD_DIR="$(dirname "$FILE")/build"
-OUTPUT_FILE="$BUILD_DIR/$(basename "$FILE")"
+OUTPUT_FILE="$BUILD_DIR/$(basename "$FILE").bin"
 
 mkdir -p "$BUILD_DIR"
 
